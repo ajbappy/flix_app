@@ -39,10 +39,60 @@ function hideSpiner() {
   document.querySelector(".spinner").classList.remove("show");
 }
 
+// display slider movies
+
+async function displaySlaider() {
+  const { results } = await fetchAPIData("movie/now_playing");
+
+  results.forEach((movie) => {
+    const div = document.createElement("div");
+    div.classList.add("swiper-slide");
+    div.innerHTML = `
+    <a href="movie-details.html?id=${movie.id}">
+      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="Movie Title" />
+    </a>
+    <h4 class="swiper-rating">
+      <i class="fas fa-star text-secondary"></i> ${movie.vote_average} / 10
+    </h4>
+ 
+    `;
+    document.querySelector(".swiper-wrapper").appendChild(div);
+
+    initSwiper();
+  });
+}
+
+function initSwiper() {
+  const swiper = new Swiper(".swiper", {
+    slidesPerView: 1,
+    spaceBetween: 30,
+    freeMode: true,
+    loop: true,
+    autoplay: {
+      delay: 4000,
+      disableOnInteraction: false,
+    },
+    breakpoints: {
+      480: {
+        slidesPerView: 2,
+        spaceBetween: 30,
+      },
+
+      768: {
+        slidesPerView: 3,
+        spaceBetween: 40,
+      },
+      992: {
+        slidesPerView: 4,
+        spaceBetween: 40,
+      },
+    },
+  });
+}
+
 // disply popular movie
 async function displayPopularMovie() {
   const { results } = await fetchAPIData("movie/popular");
-  console.log(results);
 
   results.forEach((movie) => {
     const div = document.createElement("div");
@@ -292,6 +342,7 @@ const init = () => {
   switch (global.currentPage) {
     case "/":
     case "/index.html":
+      displaySlaider();
       displayPopularMovie();
       break;
 
